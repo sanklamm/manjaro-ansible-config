@@ -1,0 +1,14 @@
+---
+- name: System Discovery Playbook
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  
+  tasks:
+    - name: Run system discovery script
+      script: ../scripts/discover-system.sh
+      register: discovery_result
+      
+    - name: Display discovery results
+      debug:
+        var: discovery_result.stdout_lines

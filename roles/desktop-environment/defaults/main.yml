@@ -1,0 +1,40 @@
+---
+# Default variables for desktop-environment role
+
+# Desktop Environment Packages
+desktop_packages:
+  GNOME:
+    - gnome-tweaks
+    - gnome-extensions-app
+    - dconf-editor
+  KDE:
+    - systemsettings
+    - kde-gtk-config
+  awesome:
+    - awesome
+    - dmenu
+    - feh
+    - picom
+    - rofi
+
+# Desktop User Services
+desktop_user_services:
+  - pipewire
+  - pipewire-pulse
+
+# GNOME Configuration
+gnome_settings:
+  - key: "/org/gnome/desktop/interface/gtk-theme"
+    value: "'Arc-Dark'"
+  - key: "/org/gnome/desktop/interface/icon-theme"  
+    value: "'Papirus'"
+  - key: "/org/gnome/desktop/wm/preferences/button-layout"
+    value: "'appmenu:minimize,maximize,close'"
+
+# Theme configuration
+theme_packages:
+  - arc-gtk-theme
+  - papirus-icon-theme
+
+gtk_theme: "Arc-Dark"
+icon_theme: "Papirus"

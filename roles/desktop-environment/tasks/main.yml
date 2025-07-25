@@ -1,0 +1,96 @@
+---
+- name: Detect desktop environment
+  set_fact:
+    detected_desktop: "{{ ansible_env.XDG_CURRENT_DESKTOP | default('unknown') }}"
+
+- name: Configure GNOME desktop settings
+  community.general.dconf:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  loop: "{{ gnome_settings }}"
+  become_user: "{{ ansible_user_id }}"
+  when: 
+    - detected_desktop == "GNOME"
+    - gnome_settings is defined
+
+- name: Install desktop-specific packages
+  community.general.pacman:
+    name: "{{ desktop_packages[detected_desktop] | default([]) }}"
+    state: present
+  become: yes
+  when: desktop_packages is defined
+
+- name: Configure systemd user services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+    scope: user
+  loop: "{{ desktop_user_services | default([]) }}"
+  become_user: "{{ ansible_user_id }}"
+
+- name: Set custom wallpaper
+  copy:
+    src: "{{ wallpaper_source }}"
+    dest: "{{ ansible_env.HOME }}/.config/wallpaper.jpg"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+  become_user: "{{ ansible_user_id }}"
+  when: wallpaper_source is defined
+
+- name: Apply wallpaper (GNOME)
+  community.general.dconf:
+    key: "/org/gnome/desktop/background/picture-uri"
+    value: "'file://{{ ansible_env.HOME }}/.config/wallpaper.jpg'"
+  become_user: "{{ ansible_user_id }}"
+  when: 
+    - detected_desktop == "GNOME"
+    - wallpaper_source is defined
+
+- name: Configure AwesomeWM
+  block:
+    - name: Create AwesomeWM config directory
+      file:
+        path: "{{ ansible_env.HOME }}/.config/awesome"
+        state: directory
+        owner: "{{ ansible_user_id }}"
+        mode: '0755'
+      become_user: "{{ ansible_user_id }}"
+
+    - name: Apply AwesomeWM wallpaper with feh
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.config/awesome/rc.lua"
+        regexp: '^.*feh --bg-scale.*'
+        line: 'awful.spawn.with_shell("feh --bg-scale {{ ansible_env.HOME }}/.config/wallpaper.jpg")'
+        create: yes
+      become_user: "{{ ansible_user_id }}"
+      when: wallpaper_source is defined
+  when: 
+    - detected_desktop == "awesome"
+
+- name: Install and configure themes
+  block:
+    - name: Install theme packages
+      community.general.pacman:
+        name: "{{ theme_packages | default([]) }}"
+        state: present
+      become: yes
+
+    - name: Apply GTK theme (GNOME)
+      community.general.dconf:
+        key: "/org/gnome/desktop/interface/gtk-theme"
+        value: "'{{ gtk_theme }}'"
+      become_user: "{{ ansible_user_id }}"
+      when: 
+        - detected_desktop == "GNOME"
+        - gtk_theme is defined
+
+    - name: Apply icon theme (GNOME)
+      community.general.dconf:
+        key: "/org/gnome/desktop/interface/icon-theme"
+        value: "'{{ icon_theme }}'"
+      become_user: "{{ ansible_user_id }}"
+      when: 
+        - detected_desktop == "GNOME"
+        - icon_theme is defined

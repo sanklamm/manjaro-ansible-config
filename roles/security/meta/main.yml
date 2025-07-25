@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Manjaro Ansible Config
+  description: Security configuration and hardening
+  company: 
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: ArchLinux
+      versions:
+        - all
+  galaxy_tags:
+    - security
+    - hardening
+    - firewall
+
+dependencies: []

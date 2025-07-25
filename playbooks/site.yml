@@ -1,0 +1,44 @@
+---
+- name: Complete Manjaro Linux Desktop Setup
+  hosts: localhost
+  connection: local
+  become: yes
+  gather_facts: yes
+  
+  vars_files:
+    - ../inventory/group_vars/all.yml
+    - ../inventory/group_vars/manjaro.yml
+  
+  pre_tasks:
+    - name: Update package cache
+      community.general.pacman:
+        update_cache: yes
+      become: yes
+      
+    - name: Install Ansible dependencies
+      community.general.pacman:
+        name:
+          - python-psutil
+          - python-dbus
+          - git
+        state: present
+      become: yes
+
+  roles:
+    - role: common
+      tags: [common, base]
+    - role: packages  
+      tags: [packages]
+    - role: dotfiles
+      tags: [dotfiles]
+    - role: desktop-environment
+      tags: [desktop]
+    - role: development-tools
+      tags: [dev-tools]
+    - role: security
+      tags: [security]
+
+  post_tasks:
+    - name: System setup complete
+      debug:
+        msg: "🎉 Manjaro Linux configuration complete!"

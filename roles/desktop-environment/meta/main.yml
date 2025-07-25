@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: Manjaro Ansible Config
+  description: Desktop environment configuration for Manjaro Linux
+  company: 
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: ArchLinux
+      versions:
+        - all
+  galaxy_tags:
+    - system
+    - desktop
+    - gnome
+    - kde
+    - awesome
+    - awesomewm
+
+dependencies: []

@@ -1,0 +1,11 @@
+---
+skip_list:
+  - yaml[line-length]
+  - name[casing]
+  - var-naming[no-role-prefix]
+
+exclude_paths:
+  - .github/
+  - .molecule/
+  - backup/
+  - docs/

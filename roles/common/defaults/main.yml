@@ -1,0 +1,11 @@
+---
+# Default variables for common role
+
+system_timezone: "UTC"
+sudo_timeout: 15
+
+# System services to enable
+system_services:
+  - NetworkManager
+  - bluetooth
+  - cups

@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Verify essential packages are installed
+      package_facts:
+        manager: auto
+
+    - name: Check that Git is installed
+      assert:
+        that:
+          - "'git' in ansible_facts.packages"
+        fail_msg: "Git package is not installed"
+
+    - name: Check that Vim is installed
+      assert:
+        that:
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Vim package is not installed"

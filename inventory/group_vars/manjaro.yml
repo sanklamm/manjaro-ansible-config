@@ -1,0 +1,148 @@
+---
+# Manjaro-specific configuration variables
+
+# Additional Manjaro packages
+manjaro_specific_packages:
+  # Core Manjaro system tools
+  - manjaro-release
+  - manjaro-settings-manager
+  - manjaro-settings-manager-notifier
+  - manjaro-hello
+  - manjaro-application-utility
+  - manjaro-system
+  - manjaro-hotfixes
+  - manjaro-alsa
+  - manjaro-pulse
+  - manjaro-zsh-config
+  
+  # Package management
+  - pamac-gtk
+  - libpamac-aur-plugin
+  - libpamac-flatpak-plugin
+  - libpamac-snap-plugin
+  
+  # Hardware detection and management
+  - mhwd
+  - mhwd-db
+  
+  # System backup and recovery
+  - timeshift
+  - timeshift-autosnap-manjaro
+
+# Manjaro themes and appearance
+manjaro_themes:
+  # GTK and icon themes
+  - manjaro-gtk-theme
+  - breath-icon-theme
+  - matcha-gtk-theme
+  
+  # Wallpapers
+  - manjaro-wallpapers-18.0
+  - wallpapers-2018
+  - wallpapers-juhraya
+  
+  # Cursor themes
+  - xcursor-breeze
+  - xcursor-vanilla-dmz
+  
+  # GRUB and boot themes
+  - grub-theme-manjaro
+  - plymouth-theme-manjaro
+
+# Manjaro kernel management
+preferred_kernel: "linux61"  # LTS kernel
+
+# Manjaro-specific services
+manjaro_services:
+  - manjaro-settings-manager
+  - snapd
+
+# AUR helper preference (yay is default, but paru is also available)
+aur_helper: yay
+
+# Flatpak configuration for Manjaro
+flatpak_remotes:
+  - name: flathub
+    url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: system
+
+# Hardware-specific configurations
+# Graphics drivers (detected: AMD)
+amd_packages:
+  - amd-ucode
+  - mesa
+  - xf86-video-amdgpu
+  - xf86-video-ati  
+  - vulkan-radeon
+  - lib32-vulkan-radeon
+  - libva-mesa-driver
+  - lib32-libva-mesa-driver
+
+# Intel graphics support (if needed)
+intel_packages:
+  - mesa
+  - xf86-video-intel
+  - vulkan-intel
+  - lib32-vulkan-intel
+  - libva-intel-driver
+  - lib32-libva-intel-driver
+
+# Audio and firmware
+hardware_support_packages:
+  - alsa-firmware
+  - alsa-utils
+  - sof-firmware
+  - b43-fwcutter
+
+# Printer support
+printer_packages:
+  - cups
+  - system-config-printer
+  - hplip  # HP printer support
+
+# Bluetooth audio
+bluetooth_audio_packages:
+  - pulseaudio-bluetooth
+  - bluez-utils
+
+# Multimedia codecs
+multimedia_packages:
+  - gst-plugins-good
+  - gst-plugins-bad
+  - gst-plugins-ugly
+  - gst-libav
+  - ffmpeg
+  - audacious
+  - mpv
+
+# XFCE Desktop Environment (detected on system)
+xfce_packages:
+  # Core XFCE components
+  - xfce4-panel
+  - xfce4-session
+  - xfce4-settings
+  - xfce4-power-manager
+  - xfce4-screensaver
+  - xfce4-screenshooter
+  - xfce4-taskmanager
+  - xfce4-terminal
+  
+  # XFCE applications
+  - thunar
+  - thunar-volman
+  - thunar-archive-plugin
+  - thunar-media-tags-plugin
+  - mousepad
+  - ristretto
+  - parole
+  - galculator
+  
+  # Display manager
+  - lightdm
+  - lightdm-gtk-greeter
+  - lightdm-gtk-greeter-settings
+  - light-locker
+  
+  # XFCE plugins and extras
+  - xfce4-pulseaudio-plugin
+  - xfce4-whiskermenu-plugin

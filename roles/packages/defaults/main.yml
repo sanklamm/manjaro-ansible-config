@@ -1,0 +1,24 @@
+---
+# Default variables for packages role
+aur_builder_user: aur_builder
+
+# Default package lists (can be overridden in group_vars)
+native_packages:
+  - base-devel
+  - git
+  - vim
+  - htop
+  - tree
+  - wget
+  - curl
+  - unzip
+
+aur_packages:
+  - yay
+
+flatpak_packages: []
+
+system_fonts:
+  - ttf-dejavu
+  - ttf-liberation
+  - noto-fonts

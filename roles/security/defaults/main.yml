@@ -1,0 +1,21 @@
+---
+# Default variables for security role
+
+security_packages:
+  - ufw
+  - fail2ban
+  - clamav
+  - rkhunter
+  - lynis
+
+enable_firewall: true
+enable_fail2ban: false
+enable_auto_updates: false
+
+# Firewall rules
+firewall_rules:
+  - { rule: allow, port: "22", proto: tcp }
+
+# Fail2ban configuration
+fail2ban_maxretry: 3
+fail2ban_bantime: 3600

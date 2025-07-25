@@ -1,0 +1,68 @@
+---
+- name: Install development packages
+  community.general.pacman:
+    name: "{{ development_packages }}"
+    state: present
+  become: yes
+  when: development_packages is defined
+
+- name: Install development AUR packages
+  kewlfft.aur.aur:
+    name: "{{ development_aur_packages }}"
+    use: yay
+    state: present
+  become: yes
+  become_user: "{{ aur_builder_user }}"
+  when: development_aur_packages is defined
+
+- name: Configure Git global settings
+  git_config:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    scope: global
+  loop:
+    - { name: user.name, value: "{{ git_user_name }}" }
+    - { name: user.email, value: "{{ git_user_email }}" }
+    - { name: init.defaultBranch, value: main }
+    - { name: core.editor, value: vim }
+  become_user: "{{ ansible_user_id }}"
+  when: 
+    - git_user_name is defined
+    - git_user_email is defined
+
+- name: Install Node.js via Node Version Manager
+  block:
+    - name: Install NVM
+      shell: >
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+      args:
+        creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+      become_user: "{{ ansible_user_id }}"
+
+    - name: Install latest Node.js LTS
+      shell: >
+        source {{ ansible_env.HOME }}/.nvm/nvm.sh && 
+        nvm install --lts && 
+        nvm use --lts
+      args:
+        executable: /bin/bash
+      become_user: "{{ ansible_user_id }}"
+      when: install_nodejs | default(false)
+
+- name: Install Python development tools
+  pip:
+    name: "{{ python_dev_packages }}"
+    state: present
+    extra_args: --user
+  become_user: "{{ ansible_user_id }}"
+  when: python_dev_packages is defined
+
+- name: Configure development environment
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.{{ item.shell }}rc"
+    line: "{{ item.line }}"
+    create: yes
+  loop:
+    - { shell: bash, line: 'export PATH="$HOME/.local/bin:$PATH"' }
+    - { shell: zsh, line: 'export PATH="$HOME/.local/bin:$PATH"' }
+  become_user: "{{ ansible_user_id }}"

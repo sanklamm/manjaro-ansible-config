@@ -1,0 +1,67 @@
+---
+- name: Create AUR builder user
+  user:
+    name: "{{ aur_builder_user }}"
+    create_home: yes
+    group: wheel
+    system: yes
+  become: yes
+
+- name: Configure AUR builder sudo access
+  lineinfile:
+    path: "/etc/sudoers.d/11-install-{{ aur_builder_user }}"
+    line: '{{ aur_builder_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman'
+    create: yes
+    mode: '0644'
+    validate: 'visudo -cf %s'
+  become: yes
+
+- name: Install native packages
+  community.general.pacman:
+    name: "{{ native_packages }}"
+    state: present
+  become: yes
+  when: native_packages is defined
+
+- name: Install AUR packages
+  kewlfft.aur.aur:
+    name: "{{ aur_packages }}"
+    use: yay
+    state: present
+  become: yes
+  become_user: "{{ aur_builder_user }}"
+  when: aur_packages is defined
+
+- name: Install Flatpak
+  community.general.pacman:
+    name: flatpak
+    state: present
+  become: yes
+
+- name: Add Flathub repository
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: system
+  become: yes
+
+- name: Install Flatpak applications
+  community.general.flatpak:
+    name: "{{ flatpak_packages }}"
+    state: present
+    method: system
+  become: yes
+  when: flatpak_packages is defined
+
+- name: Install system fonts
+  community.general.pacman:
+    name: "{{ system_fonts }}"
+    state: present
+  become: yes
+  when: system_fonts is defined
+
+- name: Update font cache
+  command: fc-cache -fv
+  become_user: "{{ ansible_user_id }}"
+  changed_when: false

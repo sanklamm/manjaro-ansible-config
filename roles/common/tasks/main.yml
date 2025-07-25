@@ -1,0 +1,51 @@
+---
+- name: Set timezone
+  timezone:
+    name: "{{ system_timezone | default('UTC') }}"
+  become: yes
+
+- name: Enable system services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ system_services }}"
+  become: yes
+  when: system_services is defined
+
+- name: Create user directories
+  file:
+    path: "{{ ansible_env.HOME }}/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0755'
+  loop:
+    - Desktop
+    - Documents
+    - Downloads
+    - Pictures
+    - Videos
+    - Music
+  become_user: "{{ ansible_user_id }}"
+
+- name: Configure sudo timeout
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^Defaults.*timestamp_timeout'
+    line: 'Defaults timestamp_timeout={{ sudo_timeout | default(15) }}'
+    validate: 'visudo -cf %s'
+  become: yes
+
+- name: Set hostname
+  hostname:
+    name: "{{ system_hostname }}"
+  become: yes
+  when: system_hostname is defined
+
+- name: Update /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1    {{ system_hostname }}"
+  become: yes
+  when: system_hostname is defined

@@ -1,0 +1,37 @@
+---
+- name: System Maintenance Tasks
+  hosts: localhost
+  connection: local
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: Update package cache
+      community.general.pacman:
+        update_cache: yes
+      
+    - name: Upgrade all packages
+      community.general.pacman:
+        upgrade: yes
+      
+    - name: Clean package cache
+      command: pacman -Sc --noconfirm
+      
+    - name: Update Flatpak packages
+      community.general.flatpak:
+        name: "*"
+        state: latest
+        method: system
+      ignore_errors: yes
+      
+    - name: Clean orphaned packages
+      shell: pacman -Rns $(pacman -Qtdq) --noconfirm
+      ignore_errors: yes
+      
+    - name: Update font cache
+      command: fc-cache -fv
+      become_user: "{{ ansible_user_id }}"
+      
+    - name: Maintenance complete
+      debug:
+        msg: "🧹 System maintenance complete!"

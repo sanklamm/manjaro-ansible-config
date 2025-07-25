@@ -1,0 +1,118 @@
+---
+- name: Install security packages
+  community.general.pacman:
+    name: "{{ security_packages }}"
+    state: present
+  become: yes
+  when: security_packages is defined
+
+- name: Configure firewall (UFW)
+  block:
+    - name: Install UFW
+      community.general.pacman:
+        name: ufw
+        state: present
+      become: yes
+
+    - name: Enable UFW service
+      systemd:
+        name: ufw
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Set UFW default policies
+      community.general.ufw:
+        direction: "{{ item.direction }}"
+        policy: "{{ item.policy }}"
+      loop:
+        - { direction: incoming, policy: deny }
+        - { direction: outgoing, policy: allow }
+      become: yes
+
+    - name: Configure UFW rules
+      community.general.ufw:
+        rule: "{{ item.rule }}"
+        port: "{{ item.port }}"
+        proto: "{{ item.proto | default('tcp') }}"
+      loop: "{{ firewall_rules | default([]) }}"
+      become: yes
+
+    - name: Enable UFW
+      community.general.ufw:
+        state: enabled
+      become: yes
+  when: enable_firewall | default(true)
+
+- name: Configure fail2ban
+  block:
+    - name: Install fail2ban
+      community.general.pacman:
+        name: fail2ban
+        state: present
+      become: yes
+
+    - name: Start and enable fail2ban
+      systemd:
+        name: fail2ban
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Configure SSH jail
+      copy:
+        content: |
+          [sshd]
+          enabled = true
+          port = ssh
+          filter = sshd
+          logpath = /var/log/auth.log
+          maxretry = {{ fail2ban_maxretry | default(3) }}
+          bantime = {{ fail2ban_bantime | default(3600) }}
+        dest: /etc/fail2ban/jail.local
+        mode: '0644'
+      become: yes
+      notify: restart fail2ban
+  when: enable_fail2ban | default(false)
+
+- name: Configure automatic security updates
+  block:
+    - name: Install pacman-contrib for checkupdates
+      community.general.pacman:
+        name: pacman-contrib
+        state: present
+      become: yes
+
+    - name: Create security update script
+      copy:
+        content: |
+          #!/bin/bash
+          # Automatic security updates
+          pacman -Syu --noconfirm
+        dest: /usr/local/bin/auto-security-update
+        mode: '0755'
+      become: yes
+
+    - name: Create systemd timer for security updates
+      copy:
+        content: |
+          [Unit]
+          Description=Automatic Security Updates
+          
+          [Timer]
+          OnCalendar=daily
+          Persistent=true
+          
+          [Install]
+          WantedBy=timers.target
+        dest: /etc/systemd/system/auto-security-update.timer
+        mode: '0644'
+      become: yes
+
+    - name: Enable security update timer
+      systemd:
+        name: auto-security-update.timer
+        state: started
+        enabled: yes
+      become: yes
+  when: enable_auto_updates | default(false)

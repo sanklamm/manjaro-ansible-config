@@ -1,0 +1,31 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+
+platforms:
+  - name: manjaro-vm
+    box: generic/arch
+    memory: 4096
+    cpus: 2
+    provider_options:
+      gui: false
+    groups:
+      - manjaro
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      roles_path: ../../roles
+      collections_path: ../../collections
+  playbooks:
+    converge: ../../playbooks/site.yml
+
+verifier:
+  name: testinfra
+  directory: ../../tests/

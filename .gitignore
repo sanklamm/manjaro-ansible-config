@@ -1,0 +1,49 @@
+# Ansible specific
+*.retry
+.ansible-vault
+ansible.log
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Molecule test artifacts
+.molecule/
+.cache/
+
+# Backup directories (contain sensitive data)
+backup/*/configs/
+backup/*/hardware/
+backup/*/packages/
+backup/*/services/
+
+# Keep backup structure but exclude sensitive generated vars
+backup/*/generated_vars.yml
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# SSH keys and sensitive configs
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Local test files
+test_*.yml
+local_*.yml

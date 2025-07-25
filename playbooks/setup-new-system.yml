@@ -1,0 +1,40 @@
+---
+- name: Setup New Manjaro System
+  hosts: localhost
+  connection: local
+  become: yes
+  gather_facts: yes
+  
+  vars_files:
+    - ../inventory/group_vars/all.yml
+    - ../inventory/group_vars/manjaro.yml
+  
+  tasks:
+    - name: Ensure system is up to date
+      community.general.pacman:
+        update_cache: yes
+        upgrade: yes
+      become: yes
+      
+    - name: Install base development tools
+      community.general.pacman:
+        name:
+          - base-devel
+          - git
+          - wget
+          - curl
+        state: present
+      become: yes
+      
+    - name: Install Python and Ansible
+      community.general.pacman:
+        name:
+          - python
+          - python-pip
+          - ansible
+        state: present
+      become: yes
+      
+    - name: Setup completed
+      debug:
+        msg: "✅ New system setup complete! Run 'make setup' for full configuration."

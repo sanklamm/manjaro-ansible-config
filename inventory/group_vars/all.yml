@@ -1,0 +1,209 @@
+---
+# User Configuration
+ansible_user_id: "{{ ansible_env.USER }}"
+aur_builder_user: aur_builder
+
+# Dotfiles Repository
+dotfiles_repo: "https://github.com/sanklamm/dotfiles-chezmoi.git"
+
+# Essential Native Packages
+native_packages:
+  # Base system essentials
+  - base
+  - base-devel
+  - sudo
+  - systemd
+  - coreutils
+  - diffutils
+  - less
+  - which
+  - man-db
+  - man-pages
+  - chezmoi
+  
+  # Network and connectivity
+  - networkmanager
+  - openssh
+  - curl
+  - wget
+  - rsync
+  - avahi
+  - nss-mdns
+  
+  # Development tools
+  - git
+  - vim
+  - neovim
+  - nano
+  - nano-syntax-highlighting
+  - docker
+  - docker-compose
+  - ansible
+  - python-pip
+  - npm
+  - yarn
+  
+  # System utilities
+  - htop
+  - iotop
+  - tree
+  - bat
+  - eza
+  - fd
+  - fzf
+  - ripgrep
+  - ncdu
+  - tmux
+  - tmuxp
+  - lazygit
+  
+  # Archive and compression
+  - 7zip
+  - bzip2
+  - unrar
+  - unace
+  - unzip
+  
+  # Cryptography and security
+  - cryptsetup
+  - device-mapper
+  - lvm2
+  
+  # Shell and completion
+  - bash-completion
+  - zsh
+  - zsh-completions
+  
+  # File systems
+  - btrfs-progs
+  - f2fs-tools
+  - ntfs-3g
+  - exfatprogs
+  
+  # Browser
+  - firefox
+
+# AUR Packages
+aur_packages:
+  - yay
+  # Development tools
+  - visual-studio-code-bin
+  - cursor-bin
+  - lazydocker
+  - git-fame
+  # System utilities
+  - neofetch
+  - appimagelauncher
+  - autokey-gtk
+  - caffeine
+  - spectre-meltdown-checker
+  # Specialized tools
+  - sesh-bin
+
+# Flatpak Applications
+flatpak_packages:
+  # Graphics and design
+  - org.gimp.GIMP
+  - org.kde.krita
+  # Productivity  
+  - org.libreoffice.LibreOffice
+  - org.onlyoffice.desktopeditors
+  - md.obsidian.Obsidian
+  - com.logseq.Logseq
+  # Communication
+  - org.telegram.desktop
+  - us.zoom.Zoom
+  # Development
+  - rest.insomnia.Insomnia
+  # Utilities
+  - com.github.tchx84.Flatseal
+
+# System Fonts
+system_fonts:
+  - ttf-dejavu
+  - ttf-liberation
+  - ttf-inconsolata
+  - noto-fonts
+  - noto-fonts-emoji
+  - noto-fonts-cjk
+  - ttf-font-awesome
+  - adobe-source-sans-fonts
+  - adobe-source-han-sans-cn-fonts
+  - adobe-source-han-sans-jp-fonts
+  - adobe-source-han-sans-kr-fonts
+
+# System Services
+system_services:
+  - NetworkManager
+  - bluetooth
+  - cups
+
+# Desktop User Services
+desktop_user_services:
+  - pipewire
+  - pipewire-pulse
+
+# Desktop Environment Packages
+desktop_packages:
+  GNOME:
+    - gnome-tweaks
+    - gnome-extensions-app
+    - dconf-editor
+  KDE:
+    - systemsettings
+    - kde-gtk-config
+  awesome:
+    - awesome
+    - dmenu-manjaro
+    - feh
+    - picom
+    - rofi
+    - alacritty
+    - kitty
+    - arandr
+    - flameshot
+    - pavucontrol
+    - blueman
+    - numlockx
+
+# GNOME Configuration
+gnome_settings:
+  - key: "/org/gnome/desktop/interface/gtk-theme"
+    value: "'Arc-Dark'"
+  - key: "/org/gnome/desktop/interface/icon-theme"  
+    value: "'Papirus'"
+  - key: "/org/gnome/desktop/wm/preferences/button-layout"
+    value: "'appmenu:minimize,maximize,close'"
+
+# Git Configuration
+git_user_name: "Sebastian Anklamm"
+git_user_email: "sanklamm@gmail.com"
+
+# Shell Configuration
+default_shell: "zsh"
+
+# System Configuration
+system_timezone: "Europe/Berlin"
+sudo_timeout: 15
+
+# Security Configuration
+enable_firewall: true
+enable_fail2ban: false
+enable_auto_updates: false
+
+# Development Tools
+development_packages:
+  - code
+  - git
+  - docker
+  - docker-compose
+  - nodejs
+  - npm
+  - yarn
+  - python-pip
+  - python-virtualenv
+
+development_aur_packages:
+  - visual-studio-code-bin
+
+install_nodejs: false

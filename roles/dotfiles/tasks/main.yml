@@ -1,0 +1,66 @@
+---
+- name: Check if chezmoi is installed
+  command: which chezmoi
+  register: chezmoi_installed
+  failed_when: false
+  changed_when: false
+
+- name: Download and install chezmoi
+  get_url:
+    url: "https://github.com/twpayne/chezmoi/releases/latest/download/chezmoi-linux-amd64"
+    dest: "/usr/local/bin/chezmoi"
+    mode: '0755'
+  become: yes
+  when: chezmoi_installed.rc != 0
+
+- name: Initialize chezmoi with dotfiles repository
+  shell: chezmoi init --apply {{ dotfiles_repo }}
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/share/chezmoi"
+  become_user: "{{ ansible_user_id }}"
+  when: dotfiles_repo is defined
+
+- name: Apply dotfiles changes
+  shell: chezmoi apply
+  become_user: "{{ ansible_user_id }}"
+  changed_when: false
+  when: dotfiles_repo is defined
+
+- name: Create local dotfiles directories
+  file:
+    path: "{{ ansible_env.HOME }}/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0755'
+  loop:
+    - .config
+    - .local/bin
+    - .local/share
+  become_user: "{{ ansible_user_id }}"
+
+- name: Template basic configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ ansible_env.HOME }}/{{ item.dest }}"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+  loop:
+    - { src: bashrc.j2, dest: .bashrc }
+    - { src: zshrc.j2, dest: .zshrc }
+    - { src: gitconfig.j2, dest: .gitconfig }
+  become_user: "{{ ansible_user_id }}"
+  when: not (dotfiles_repo is defined)
+
+- name: Install Zsh shell
+  community.general.pacman:
+    name: zsh
+    state: present
+  become: yes
+  when: default_shell == "zsh"
+
+- name: Change user shell to Zsh
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: /usr/bin/zsh
+  become: yes
+  when: default_shell == "zsh"

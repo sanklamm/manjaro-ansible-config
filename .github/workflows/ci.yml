@@ -1,0 +1,73 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install ansible-lint yamllint
+          
+      - name: Run ansible-lint
+        run: ansible-lint playbooks/ roles/
+        
+      - name: Run yamllint
+        run: yamllint .
+
+  test-docker:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          ansible-galaxy collection install -r collections/requirements.yml
+          
+      - name: Run Molecule Docker tests
+        run: molecule test --scenario-name docker
+
+  test-vm:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, test-docker]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          ansible-galaxy collection install -r collections/requirements.yml
+          
+      - name: Setup VirtualBox
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y virtualbox vagrant
+          
+      - name: Run Molecule VM tests
+        run: molecule test --scenario-name vagrant
+        timeout-minutes: 30
