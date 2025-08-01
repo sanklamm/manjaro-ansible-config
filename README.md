@@ -15,7 +15,7 @@ A comprehensive, production-ready Ansible-based system for capturing and replica
 
 ```bash
 # Bootstrap on new system
-curl -fsSL https://raw.githubusercontent.com/your-username/manjaro-ansible-config/main/scripts/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sanklamm/manjaro-ansible-config/main/scripts/bootstrap.sh | bash
 
 # Or manual installation
 git clone https://github.com/your-username/manjaro-ansible-config.git
