@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Manjaro Ansible Configuration Bootstrap Script
 
-REPO_URL="https://github.com/your-username/manjaro-ansible-config.git"
+REPO_URL="git@github.com:sanklamm/manjaro-ansible-config.git"
 INSTALL_DIR="$HOME/manjaro-ansible-config"
 
 echo "🚀 Manjaro Ansible Configuration Bootstrap"
