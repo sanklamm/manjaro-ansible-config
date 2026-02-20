@@ -49,13 +49,15 @@
       become_user: "{{ ansible_user_id }}"
       when: install_nodejs | default(false)
 
-- name: Install Python development tools
-  pip:
-    name: "{{ python_dev_packages }}"
+- name: Install Python development tools via pacman
+  community.general.pacman:
+    name:
+      - python-black
+      - flake8
+      - mypy
+      - python-virtualenv
     state: present
-    extra_args: --user
-  become_user: "{{ ansible_user_id }}"
-  when: python_dev_packages is defined
+  become: yes
 
 - name: Configure development environment
   lineinfile:

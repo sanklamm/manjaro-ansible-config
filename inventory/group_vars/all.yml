@@ -3,8 +3,8 @@
 ansible_user_id: "{{ ansible_env.USER }}"
 aur_builder_user: aur_builder
 
-# Dotfiles Repository
-dotfiles_repo: "https://github.com/sanklamm/dotfiles-chezmoi.git"
+# Dotfiles Repository (private - use SSH)
+dotfiles_repo: "git@github.com:sanklamm/dotfiles-chezmoi.git"
 
 # Essential Native Packages
 native_packages:
@@ -43,6 +43,9 @@ native_packages:
   - npm
   - yarn
   
+  # Terminal emulators
+  - kitty
+
   # System utilities
   - htop
   - iotop
@@ -90,12 +93,10 @@ aur_packages:
   - visual-studio-code-bin
   - cursor-bin
   - lazydocker
-  - git-fame
   # System utilities
   - neofetch
-  - appimagelauncher
-  - autokey-gtk
-  - caffeine
+  # - autokey-gtk  # build broken: missing python-build in AUR build env
+  # - caffeine  # build broken: python-ewmh requires python-build
   - spectre-meltdown-checker
   # Specialized tools
   - sesh-bin
@@ -184,7 +185,7 @@ default_shell: "zsh"
 
 # System Configuration
 system_timezone: "Europe/Berlin"
-sudo_timeout: 15
+sudo_timeout: -1  # never expires per session (auth once per login)
 
 # Security Configuration
 enable_firewall: true
@@ -193,7 +194,7 @@ enable_auto_updates: false
 
 # Development Tools
 development_packages:
-  - code
+  # - code  # conflicts with visual-studio-code-bin (AUR)
   - git
   - docker
   - docker-compose

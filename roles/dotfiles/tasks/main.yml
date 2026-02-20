@@ -13,18 +13,27 @@
   become: yes
   when: chezmoi_installed.rc != 0
 
+- name: Check if chezmoi is already initialized
+  command: test -d {{ ansible_env.HOME }}/.local/share/chezmoi/.git
+  register: chezmoi_repo
+  become: no
+  failed_when: false
+  changed_when: false
+
 - name: Initialize chezmoi with dotfiles repository
-  shell: chezmoi init --apply {{ dotfiles_repo }}
-  args:
-    creates: "{{ ansible_env.HOME }}/.local/share/chezmoi"
-  become_user: "{{ ansible_user_id }}"
-  when: dotfiles_repo is defined
+  shell: chezmoi init --apply --force {{ dotfiles_repo }}
+  become: no
+  when:
+    - dotfiles_repo is defined
+    - chezmoi_repo.rc != 0
 
 - name: Apply dotfiles changes
-  shell: chezmoi apply
-  become_user: "{{ ansible_user_id }}"
+  shell: chezmoi apply --force
+  become: no
   changed_when: false
-  when: dotfiles_repo is defined
+  when:
+    - dotfiles_repo is defined
+    - chezmoi_repo.rc == 0
 
 - name: Create local dotfiles directories
   file:

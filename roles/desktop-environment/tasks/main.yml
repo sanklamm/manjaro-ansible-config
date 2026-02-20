@@ -21,14 +21,15 @@
   become: yes
   when: desktop_packages is defined
 
-- name: Configure systemd user services
-  systemd:
-    name: "{{ item }}"
-    state: started
-    enabled: yes
-    scope: user
+- name: Enable systemd user services
+  command: systemctl --user enable {{ item }}
   loop: "{{ desktop_user_services | default([]) }}"
-  become_user: "{{ ansible_user_id }}"
+  become: no
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_user_uid }}/bus"
+  changed_when: false
+  ignore_errors: yes
 
 - name: Set custom wallpaper
   copy:

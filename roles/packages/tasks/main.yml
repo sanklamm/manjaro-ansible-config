@@ -25,12 +25,23 @@
 
 - name: Install AUR packages
   kewlfft.aur.aur:
-    name: "{{ aur_packages }}"
+    name: "{{ item }}"
     use: yay
     state: present
   become: yes
   become_user: "{{ aur_builder_user }}"
+  loop: "{{ aur_packages }}"
   when: aur_packages is defined
+  ignore_errors: yes
+  register: aur_results
+
+- name: Report failed AUR packages
+  debug:
+    msg: "Failed to install AUR package: {{ item.item }}"
+  loop: "{{ aur_results.results | default([]) }}"
+  when: item.failed | default(false)
+  loop_control:
+    label: "{{ item.item }}"
 
 - name: Install Flatpak
   community.general.pacman:

@@ -33,7 +33,7 @@ gnome_settings:
 
 # Theme configuration
 theme_packages:
-  - arc-gtk-theme
+  - matcha-gtk-theme
   - papirus-icon-theme
 
 gtk_theme: "Arc-Dark"
