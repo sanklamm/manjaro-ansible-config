@@ -46,6 +46,9 @@ native_packages:
   # Terminal emulators
   - kitty
 
+  # GitHub CLI
+  - github-cli
+
   # System utilities
   - htop
   - iotop

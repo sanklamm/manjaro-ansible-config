@@ -188,6 +188,37 @@ sudo usermod -aG vboxusers $USER
 make test-docker
 ```
 
+### Fresh System Setup
+
+On a fresh Manjaro install, you may need to refresh package signing keys before the playbook can install packages:
+
+```bash
+sudo pacman -Sy archlinux-keyring manjaro-keyring
+sudo pacman -Sc --noconfirm  # clear corrupted package cache
+```
+
+### Private Dotfiles Repository
+
+If your chezmoi dotfiles repo is private, the `dotfiles_repo` URL must use SSH (`git@github.com:...`) rather than HTTPS. You'll need SSH keys configured before running the playbook:
+
+```bash
+# Copy existing keys or generate new ones
+ssh-keygen -t ed25519 -C "your@email.com"
+# Add the public key to GitHub
+```
+
+chezmoi templates may require data variables (e.g. `name`, `email`). Create the config before running:
+
+```bash
+mkdir -p ~/.config/chezmoi
+cat > ~/.config/chezmoi/chezmoi.toml << EOF
+[data]
+  name = "Your Name"
+  email = "your@email.com"
+  github_user = "yourusername"
+EOF
+```
+
 ### Common Issues
 
 **AUR packages fail to install:**
@@ -195,6 +226,8 @@ make test-docker
 # Check AUR builder user
 sudo -u aur_builder yay --version
 ```
+
+AUR packages are installed individually so a single failure won't block the rest. Packages with broken build dependencies (e.g. missing `python-build` in the AUR build environment) are skipped and reported at the end of the run.
 
 **Flatpak applications don't appear:**
 ```bash
@@ -206,6 +239,14 @@ flatpak update
 ```bash
 # Restart GNOME session or reboot
 ```
+
+**systemd user services fail during playbook:**
+
+This is expected. Services like `pipewire` and `pipewire-pulse` require a user D-Bus session which isn't available when running under `sudo`/`become`. These services are typically already enabled by the desktop environment and will work after a reboot.
+
+**`code` package conflicts with `visual-studio-code-bin`:**
+
+The official `code` (OSS) package conflicts with the AUR `visual-studio-code-bin` (Microsoft) package. Only include one in your configuration. The AUR version is installed by default.
 
 ## License
 
